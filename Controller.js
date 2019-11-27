@@ -21,26 +21,7 @@ class Controller{
             this._addItemAoSelect(this._selectCategorias, item.categoria, index)
         );
     }
-/*
-    _initProdutos(){
-        let produtos = catalogo[0].produtos;
-        produtos.forEach( (produto, index) =>
-            this._addItemAoSelect(this._selectProdutos, produto.nome, index)
-        );
-    }
 
-    _initMarcas(){
-        let marcas = catalogo[0].produtos[0].marcas;
-        marcas.forEach( (marca, index) =>
-            this._addItemAoSelect(this._selectMarcas, marca.nome, index)
-        );
-    }
-
-    _initChart(){
-        let vendasIniciais = catalogo[0].produtos[0].marcas[0].vendas;
-        this.chartBuilder = new ChartBuilder(this._divChart, vendasIniciais);
-    }
-*/
     setCategoria(event){
         let indexCategoria = this._selectCategorias.value;
         this.categoria = catalogo[indexCategoria];
