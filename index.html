@@ -1,0 +1,141 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row alert alert-primary">
+				<span class="text-center">Relatório de Vendas</span>
+			</div>
+			<div class="row">
+				<div class="col-4">Categorias
+					<select class="form-control" id="categorias">
+					</select>
+				</div>
+				<div class="col-4">Produtos
+					<select class="form-control" id="produtos">
+					</select>
+				</div>
+				<div class="col-4">Marcas
+					<select class="form-control" id="marcas">
+					</select>
+				</div>
+			</div>
+			<div id="chart"></div>
+		</div>
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>	
+	<script type="text/javascript" src="database.js"></script>
+	<script>
+		$(document).ready(function(){
+						
+			var $categorias = $("#categorias");
+			var $produtos = $("#produtos");
+			var $marcas = $("#marcas");
+
+			_init();
+			
+			function _init(){
+				_initCategorias();
+				_initProdutos();
+				_initMarcas();
+				_initChart();
+				
+			}
+			
+			function _initCategorias(){				
+				$.each(catalogo, function(index){
+					$categorias.append(`<option value="${index}">${catalogo[index].categoria}</option>`);
+				});
+			}
+
+			function _initProdutos(){
+				produtos = catalogo[0].produtos;
+				$.each(produtos, function(index){
+					$produtos.append(`<option value="${index}">${produtos[index].nome}</option>`);
+				});
+			}
+
+			function _initMarcas(){
+				marcas = catalogo[0].produtos[0].marcas;
+				$.each(marcas, function(index){
+					$marcas.append(`<option value="${index}">${marcas[index].nome}</option>`);
+				});
+			}
+
+			function _initChart(){
+				google.charts.load('current', {'packages':['corechart']});
+				google.charts.setOnLoadCallback(atualizarGrafico);
+			}
+
+			function atualizarProdutos(categoria){
+				$produtos.empty();
+				produtos = categoria.produtos;
+				$.each(produtos, function(index){
+					$produtos.append(`<option value="${index}">${produtos[index].nome}</option>`);
+				});
+
+				atualizarMarcas(produtos[0]);
+			}
+
+			function atualizarMarcas(produto){
+				$marcas.empty();
+				marcas = produto.marcas;
+				$.each(marcas, function(index){
+					$marcas.append(`<option value="${index}">${marcas[index].nome}</option>`);
+				});
+
+				atualizarGrafico(marcas[0].vendas);
+			}
+
+			function atualizarGrafico(vendas){
+				if(!vendas){
+					indexCategoria = $categorias.children("option:selected").val();
+					indexProduto = $produtos.children("option:selected").val();
+					indexMarca = $marcas.children("option:selected").val();
+					vendas = catalogo[indexCategoria].produtos[indexProduto].marcas[indexMarca].vendas;
+				}
+
+				var data = new google.visualization.DataTable();
+				data.addColumn('string');
+				data.addColumn('number', 'Vendas');
+				data.addRows([
+				['Janeiro', vendas[0]],
+				['Fevereiro', vendas[1]],
+				['Março', vendas[2]],
+				['Abril', vendas[3]],
+				['Maio', vendas[4]]
+				]);
+
+				var options = {'title':'Vendas Por Mês Para:',
+                       'width':1400,
+                       'height':600};
+
+				var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+				chart.draw(data, options);
+			}
+
+			$("#categorias").on('change', function(event){
+				indexCategoria = $categorias.children("option:selected").val();
+				atualizarProdutos(catalogo[indexCategoria]);
+			});
+
+			$("#produtos").on('change', function(event){
+				indexCategoria = $categorias.children("option:selected").val();
+				indexProduto = $produtos.children("option:selected").val();
+				produto = catalogo[indexCategoria].produtos[indexProduto];
+				atualizarMarcas(produto);
+			});
+
+			$("#marcas").on('change', function(event){
+				indexCategoria = $categorias.children("option:selected").val();
+				indexProduto = $produtos.children("option:selected").val();
+				indexMarca = $marcas.children("option:selected").val();
+				vendas = catalogo[indexCategoria].produtos[indexProduto].marcas[indexMarca].vendas;
+				atualizarGrafico(vendas);
+			});
+			
+		});
+	</script>
+	</body>
+</html>
