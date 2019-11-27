@@ -1,14 +1,16 @@
 class ChartBuilder{
-    constructor(container, vendas){
-        this.vendas = vendas;
+    constructor(container){
         this.container = container;
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(() => this.desenharGrafico());
     }
 
     atualizarGrafico(vendas){
         this.vendas = vendas;
-        this.desenharGrafico();
+        this.carregarGrafico();
+    }
+
+    carregarGrafico(){
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(() => this.desenharGrafico());
     }
     
     desenharGrafico(){        

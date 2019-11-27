@@ -9,109 +9,26 @@
 			</div>
 			<div class="row">
 				<div class="col-4">Categorias
-					<select class="form-control" id="categorias">
+					<select class="form-control" id="categorias" onchange="controller.setCategoria(event)">
 					</select>
 				</div>
 				<div class="col-4">Produtos
-					<select class="form-control" id="produtos">
+					<select class="form-control" id="produtos" onchange="controller.setProduto(event)">
 					</select>
 				</div>
 				<div class="col-4">Marcas
-					<select class="form-control" id="marcas">
+					<select class="form-control" id="marcas" onchange="controller.setMarca(event)">
 					</select>
 				</div>
 			</div>
 			<div id="chart"></div>
 		</div>
-	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>	
 	<script type="text/javascript" src="database.js"></script>
-	<script type="text/javascript" src="chartBuilder.js"></script>
+	<script type="text/javascript" src="ChartBuilder.js"></script>
+	<script type="text/javascript" src="Controller.js"></script>
 	<script>
-		$(document).ready(function(){
-						
-			var $categorias = $("#categorias");
-			var $produtos = $("#produtos");
-			var $marcas = $("#marcas");
-			var chartBuilder;
-
-			_init();
-			
-			function _init(){
-				_initCategorias();
-				_initProdutos();
-				_initMarcas();
-				_initChart();
-				
-			}
-			
-			function _initCategorias(){				
-				$.each(catalogo, function(index){
-					$categorias.append(`<option value="${index}">${catalogo[index].categoria}</option>`);
-				});
-			}
-
-			function _initProdutos(){
-				produtos = catalogo[0].produtos;
-				$.each(produtos, function(index){
-					$produtos.append(`<option value="${index}">${produtos[index].nome}</option>`);
-				});
-			}
-
-			function _initMarcas(){
-				marcas = catalogo[0].produtos[0].marcas;
-				$.each(marcas, function(index){
-					$marcas.append(`<option value="${index}">${marcas[index].nome}</option>`);
-				});
-			}
-
-			function _initChart(){
-				let vendasIniciais = catalogo[0].produtos[0].marcas[0].vendas;
-				let component = document.getElementById("chart");
-				chartBuilder = new ChartBuilder(component, vendasIniciais);
-			}
-
-			function atualizarProdutos(categoria){
-				$produtos.empty();
-				produtos = categoria.produtos;
-				$.each(produtos, function(index){
-					$produtos.append(`<option value="${index}">${produtos[index].nome}</option>`);
-				});
-
-				atualizarMarcas(produtos[0]);
-			}
-
-			function atualizarMarcas(produto){
-				$marcas.empty();
-				marcas = produto.marcas;
-				$.each(marcas, function(index){
-					$marcas.append(`<option value="${index}">${marcas[index].nome}</option>`);
-				});
-
-				chartBuilder.atualizarGrafico(marcas[0].vendas);
-			}			
-
-			$("#categorias").on('change', function(event){
-				indexCategoria = $categorias.children("option:selected").val();
-				atualizarProdutos(catalogo[indexCategoria]);
-			});
-
-			$("#produtos").on('change', function(event){
-				indexCategoria = $categorias.children("option:selected").val();
-				indexProduto = $produtos.children("option:selected").val();
-				produto = catalogo[indexCategoria].produtos[indexProduto];
-				atualizarMarcas(produto);
-			});
-
-			$("#marcas").on('change', function(event){
-				indexCategoria = $categorias.children("option:selected").val();
-				indexProduto = $produtos.children("option:selected").val();
-				indexMarca = $marcas.children("option:selected").val();
-				vendas = catalogo[indexCategoria].produtos[indexProduto].marcas[indexMarca].vendas;
-				chartBuilder.atualizarGrafico(vendas);
-			});
-			
-		});
-	</script>
+        var controller = new Controller();
+    </script>
 	</body>
 </html>
