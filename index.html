@@ -26,12 +26,14 @@
 	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>	
 	<script type="text/javascript" src="database.js"></script>
+	<script type="text/javascript" src="chartBuilder.js"></script>
 	<script>
 		$(document).ready(function(){
 						
 			var $categorias = $("#categorias");
 			var $produtos = $("#produtos");
 			var $marcas = $("#marcas");
+			var chartBuilder;
 
 			_init();
 			
@@ -64,8 +66,9 @@
 			}
 
 			function _initChart(){
-				google.charts.load('current', {'packages':['corechart']});
-				google.charts.setOnLoadCallback(atualizarGrafico);
+				let vendasIniciais = catalogo[0].produtos[0].marcas[0].vendas;
+				let component = document.getElementById("chart");
+				chartBuilder = new ChartBuilder(component, vendasIniciais);
 			}
 
 			function atualizarProdutos(categoria){
@@ -85,35 +88,8 @@
 					$marcas.append(`<option value="${index}">${marcas[index].nome}</option>`);
 				});
 
-				atualizarGrafico(marcas[0].vendas);
-			}
-
-			function atualizarGrafico(vendas){
-				if(!vendas){
-					indexCategoria = $categorias.children("option:selected").val();
-					indexProduto = $produtos.children("option:selected").val();
-					indexMarca = $marcas.children("option:selected").val();
-					vendas = catalogo[indexCategoria].produtos[indexProduto].marcas[indexMarca].vendas;
-				}
-
-				var data = new google.visualization.DataTable();
-				data.addColumn('string');
-				data.addColumn('number', 'Vendas');
-				data.addRows([
-				['Janeiro', vendas[0]],
-				['Fevereiro', vendas[1]],
-				['Março', vendas[2]],
-				['Abril', vendas[3]],
-				['Maio', vendas[4]]
-				]);
-
-				var options = {'title':'Vendas Por Mês Para:',
-                       'width':1400,
-                       'height':600};
-
-				var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
-				chart.draw(data, options);
-			}
+				chartBuilder.atualizarGrafico(marcas[0].vendas);
+			}			
 
 			$("#categorias").on('change', function(event){
 				indexCategoria = $categorias.children("option:selected").val();
@@ -132,7 +108,7 @@
 				indexProduto = $produtos.children("option:selected").val();
 				indexMarca = $marcas.children("option:selected").val();
 				vendas = catalogo[indexCategoria].produtos[indexProduto].marcas[indexMarca].vendas;
-				atualizarGrafico(vendas);
+				chartBuilder.atualizarGrafico(vendas);
 			});
 			
 		});
